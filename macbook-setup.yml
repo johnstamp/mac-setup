@@ -1,0 +1,186 @@
+
+---
+- name: Setup MacBook for Development
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Check if Homebrew is installed
+      stat:
+        path: /opt/homebrew/bin/brew
+      register: brew_check
+      tags: always
+
+    - name: Install Homebrew if missing
+      shell: >
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      when: not brew_check.stat.exists
+      tags: homebrew
+
+    - name: Ensure Homebrew is in the PATH
+      shell: |
+        echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+      when: not brew_check.stat.exists
+      tags: homebrew
+
+    - name: Install Developer Tools using Homebrew
+      homebrew:
+        name:
+          - git
+          - java
+          - go
+          - yarn
+          - zsh
+          - iterm2
+          - spotify
+          - vim
+          - pyenv
+          - warp
+        state: present
+      tags: dev-tools
+
+    - name: Install Applications via Homebrew Cask
+      homebrew_cask:
+        name:
+          - visual-studio-code
+          - intellij-idea
+          - obsidian
+          - webstorm
+          - rustrover
+        state: present
+      tags: apps
+
+    - name: Check if Oh My Zsh is installed
+      stat:
+        path: ~/.oh-my-zsh
+      register: ohmyzsh_check
+      ignore_errors: true  # This ensures the playbook continues even if this check fails
+      tags: ohmyzsh
+
+    - name: Install Oh My Zsh
+      shell: >
+        RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      when: not ohmyzsh_check.stat.exists
+      tags: ohmyzsh
+
+
+    - name: Check if johnstamp/vimrc is already installed
+      stat:
+        path: ~/.vimrc
+      register: vimrc_check
+
+    - name: Install johnstamp/vimrc
+      shell: >
+        git clone https://github.com/johnstamp/vimrc.git ~/.vim_runtime &&
+        sh ~/.vim_runtime/install_awesome_vimrc.sh
+      when: not vimrc_check.stat.exists
+      tags: vim
+
+    - name: Check if Rust is installed
+      stat:
+        path: ~/.cargo/bin/rustc
+      register: rust_check
+      tags: rust
+
+    - name: Install Rust using rustup
+      shell: >
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      when: not rust_check.stat.exists
+      tags: rust
+
+    - name: Ensure Rust is in the PATH
+      shell: |
+        echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.zshrc
+        source ~/.zshrc
+      when: not rust_check.stat.exists
+
+
+    - name: Check if NVM is already installed
+      stat:
+        path: "{{ lookup('env', 'HOME') }}/.nvm/nvm.sh"
+      register: nvm_check
+
+    - name: Install NVM (Node Version Manager)
+      shell: >
+        curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+      args:
+        executable: /bin/bash
+      when: not nvm_check.stat.exists
+
+    - name: Add NVM to shell profile
+      blockinfile:
+        path: "{{ lookup('env', 'HOME') }}/.zshrc"
+        block: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK: NVM"
+
+    - name: Load NVM for this session
+      shell: source ~/.zshrc
+
+    - name: Install Node.js via NVM
+      shell: |
+        source ~/.zshrc && nvm install --lts && nvm use --lts
+      args:
+        executable: /bin/zsh
+      tags: node
+
+    - name: Verify npm is installed
+      shell: |
+        source ~/.zshrc && npm -v
+      args:
+        executable: /bin/zsh
+      register: npm_version
+      changed_when: false
+      tags: node
+
+    - name: Install React Development Tools (npm module)
+      shell: |
+        source ~/.zshrc && npm install -g react-devtools create-react-app eslint prettier typescript
+      args:
+        executable: /bin/zsh
+      tags: react    
+    
+    - name: Install Obsidian via Homebrew Cask
+      homebrew_cask:
+        name: obsidian
+        state: present
+      tags: obsidian
+
+    - name: Ensure Obsidian plugin directory exists
+      file:
+        path: "{{ lookup('env', 'HOME') }}/.obsidian/plugins"
+        state: directory
+        mode: '0755'
+      tags: obsidian
+
+    - name: Install Obsidian Excalidraw Plugin
+      git:
+        repo: "https://github.com/zsviczian/obsidian-excalidraw-plugin.git"
+        dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-excalidraw-plugin"
+      tags: obsidian
+
+    - name: Install Obsidian Git Plugin
+      git:
+        repo: "https://github.com/denolehov/obsidian-git.git"
+        dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-git"
+      tags: obsidian
+
+    - name: Install Obsidian Vimrc Support Plugin
+      git:
+        repo: "https://github.com/esm7/obsidian-vimrc-support.git"
+        dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-vimrc-support"
+      tags: obsidian
+
+    - name: Install VS Code Extensions
+      command: 
+        code --install-extension ms-vscode.vscode-typescript-next
+        code --install-extension James-Yu.latex-workshop
+        code --install-extension vscodevim.vim
+        code --install-extension ms-azuretools.vscode-docker
+        code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+        code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+        code --install-extension redhat.vscode-yaml
+        code --install-extension ms-vscode-remote.remote-containers
+      tags: vscode
