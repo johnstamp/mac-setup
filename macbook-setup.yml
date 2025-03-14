@@ -47,6 +47,7 @@
           - obsidian
           - webstorm
           - rustrover
+          - whatsapp
         state: present
       tags: apps
 
@@ -183,4 +184,6 @@
         code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
         code --install-extension redhat.vscode-yaml
         code --install-extension ms-vscode-remote.remote-containers
+        code --install-extension ms-python.python
+        code --install-extension rust-lang.rust-analyzer        
       tags: vscode
