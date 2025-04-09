@@ -1,0 +1,20 @@
+---
+
+- name: Check if Homebrew is installed
+  stat:
+    path: /opt/homebrew/bin/brew
+  register: brew_check
+  tags: always
+
+- name: Install Homebrew if missing
+  shell: >
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: not brew_check.stat.exists
+  tags: homebrew
+
+- name: Ensure Homebrew is in the PATH
+  shell: |
+    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  when: not brew_check.stat.exists
+  tags: homebrew

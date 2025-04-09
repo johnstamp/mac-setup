@@ -1,0 +1,12 @@
+- name: Setup MacBook for Development
+  hosts: localhost
+  connection: local
+  roles:
+    - homebrew
+    - zsh
+    - devtools
+    - rust
+    - python
+    - node
+    - editors
+    - latex

@@ -1,0 +1,12 @@
+---
+
+- name: Download MacTeX installer
+  get_url:
+    url: https://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
+    dest: /tmp/MacTeX.pkg
+  tags: latex
+
+- name: Install MacTeX
+  command: sudo installer -pkg /tmp/MacTeX.pkg -target /
+  tags: latex
+

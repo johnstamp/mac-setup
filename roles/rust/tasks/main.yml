@@ -1,0 +1,23 @@
+
+- name: Check if Rust is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+  register: rust_check
+  tags: rust
+
+- name: Install Rust using rustup
+  shell: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  when: not rust_check.stat.exists
+  tags: rust
+
+- name: Add Rust to shell
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    block: |
+      export PATH="$HOME/.cargo/bin:$PATH"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: RUST"
+  tags: rust
+
+
+
