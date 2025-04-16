@@ -1,0 +1,56 @@
+---
+- name: Install Visual Studio Code via Homebrew Cask
+  homebrew_cask:
+    name: visual-studio-code
+    state: present
+  tags: vscode
+
+- name: Install VS Code extensions
+  command: |
+    code --install-extension ms-vscode.vscode-typescript-next
+    code --install-extension James-Yu.latex-workshop
+    code --install-extension vscodevim.vim
+    code --install-extension ms-azuretools.vscode-docker
+    code --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+    code --install-extension redhat.vscode-yaml
+    code --install-extension ms-vscode-remote.remote-containers
+    code --install-extension ms-python.python
+    code --install-extension rust-lang.rust-analyzer
+  tags: vscode
+
+- name: Install Obsidian via Homebrew Cask
+  homebrew_cask:
+    name: obsidian
+    state: present
+  tags: obsidian
+
+- name: Ensure Obsidian plugin directory exists
+  file:
+    path: "{{ lookup('env', 'HOME') }}/.obsidian/plugins"
+    state: directory
+    mode: '0755'
+  tags: obsidian
+
+- name: Install Obsidian Excalidraw Plugin
+  git:
+    repo: "https://github.com/zsviczian/obsidian-excalidraw-plugin.git"
+    dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-excalidraw-plugin"
+  tags: obsidian
+
+- name: Install Obsidian Git Plugin
+  git:
+    repo: "https://github.com/denolehov/obsidian-git.git"
+    dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-git"
+  tags: obsidian
+
+- name: Install Obsidian Vimrc Support Plugin
+  git:
+    repo: "https://github.com/esm7/obsidian-vimrc-support.git"
+    dest: "{{ lookup('env', 'HOME') }}/.obsidian/plugins/obsidian-vimrc-support"
+  tags: obsidian
+
+- name: Install WebStorm via Homebrew Cask
+  homebrew_cask:
+    name: webstorm
+    state: present
+  tags: webstorm

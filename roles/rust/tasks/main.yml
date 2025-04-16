@@ -1,4 +1,4 @@
-
+---
 - name: Check if Rust is installed
   stat:
     path: "{{ ansible_env.HOME }}/.cargo/bin/rustc"

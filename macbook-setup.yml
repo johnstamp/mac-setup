@@ -188,29 +188,6 @@
         code --install-extension rust-lang.rust-analyzer        
       tags: vscode
 
-    # - name: Install MacTeX (LaTeX distribution)
-    #   community.general.homebrew:
-    #     name: mactex
-    #     state: present
-    #     cask: true
-
-    # - name: Ensure MacTeX binaries are in PATH
-    #   block:
-    #   - name: Add MacTeX to PATH in .zshrc
-    #     lineinfile:
-    #       path: ~/.zshrc
-    #       line: 'export PATH="/Library/TeX/texbin:$PATH"'
-    #       create: yes
-      
-    #   - name: Add MacTeX to PATH in .bashrc
-    #     lineinfile:
-    #       path: ~/.bashrc
-    #       line: 'export PATH="/Library/TeX/texbin:$PATH"'
-    #       create: yes
-
-    #   - name: Apply PATH changes immediately
-    #     shell: export PATH="/Library/TeX/texbin:$PATH"
-
     - name: Download MacTeX installer
       get_url:
         url: https://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg

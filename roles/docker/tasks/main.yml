@@ -1,0 +1,28 @@
+
+---
+- name: Install Docker CLI
+  homebrew:
+    name: docker
+    state: present
+  tags: docker
+
+- name: Install Docker Compose CLI (optional)
+  homebrew:
+    name: docker-compose
+    state: present
+  tags: docker
+
+- name: Install Docker Desktop via Cask
+  homebrew_cask:
+    name: docker
+    state: present
+    install_options: ['--force']
+  tags: docker
+
+- name: Ensure Docker CLI is in PATH via .zshrc
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'export PATH="/usr/local/bin:$PATH"'
+    state: present
+  when: ansible_env.SHELL is search("/zsh")
+  tags: docker
