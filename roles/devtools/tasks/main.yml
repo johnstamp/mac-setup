@@ -17,6 +17,8 @@
     name:
       - iterm2
       - spotify
+      - gimp
+      - zoom
     state: present
   tags: dev-tools
 
