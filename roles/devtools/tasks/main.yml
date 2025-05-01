@@ -19,6 +19,8 @@
       - spotify
       - gimp
       - zoom
+      - virtualbox
+      - vagrant
     state: present
   tags: dev-tools
 
