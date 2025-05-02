@@ -11,3 +11,4 @@
     - editors
     - latex
     - docker
+    - { role: jvmtools, tags: jvmtools }

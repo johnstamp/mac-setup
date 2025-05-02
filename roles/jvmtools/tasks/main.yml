@@ -1,0 +1,40 @@
+---
+- name: Ensure SDKMAN init script is sourced in .zshrc
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    marker: "# {mark} ANSIBLE SDKMAN INIT"
+    block: |
+      # Enable SDKMAN
+      export SDKMAN_DIR="$HOME/.sdkman"
+      [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+
+- name: Install SDKMAN
+  shell: curl -s "https://get.sdkman.io" | bash
+  args:
+    creates: "{{ lookup('env', 'HOME') }}/.sdkman/bin/sdkman-init.sh"
+  tags: jvmtools
+
+
+- name: Install Java using SDKMAN
+  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java
+  args:
+    executable: /bin/zsh
+  tags: jvmtools
+
+- name: Install Scala using SDKMAN
+  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install scala
+  args:
+    executable: /bin/zsh
+  tags: jvmtools
+
+- name: Install sbt using SDKMAN
+  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install sbt
+  args:
+    executable: /bin/zsh
+  tags: jvmtools
+
+
+- name: Reminder to reload shell
+  debug:
+    msg: "Run 'source ~/.zshrc' or open a new terminal to activate updated environment variables."
