@@ -11,4 +11,5 @@
     - editors
     - latex
     - docker
+    - { role: intellij, tags: intellij }
     - { role: jvmtools, tags: jvmtools }

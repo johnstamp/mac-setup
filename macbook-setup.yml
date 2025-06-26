@@ -36,6 +36,7 @@
           - vim
           - pyenv
           - warp
+          - cookiecutter
         state: present
       tags: dev-tools
 

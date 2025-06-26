@@ -9,6 +9,8 @@
       - vim
       - pyenv
       - warp
+      - scala
+      - sbt
     state: present
   tags: dev-tools
 
@@ -21,6 +23,7 @@
       - zoom
       - virtualbox
       - vagrant
+      - utm
     state: present
   tags: dev-tools
 

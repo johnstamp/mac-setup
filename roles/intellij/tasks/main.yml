@@ -1,0 +1,40 @@
+- name: Download JetBrains Toolbox
+  tags: intellij
+  get_url:
+    url: https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.6.2.41321-arm64.dmg
+    dest: /tmp/jetbrains-toolbox.dmg
+
+- name: Mount the DMG
+  tags: intellij
+  become: true
+  command: hdiutil attach /tmp/jetbrains-toolbox.dmg
+  register: mount_result
+  changed_when: "'/Volumes/JetBrains Toolbox' in mount_result.stdout"
+
+- name: Copy Toolbox app to Applications
+  tags: intellij
+  become: true
+  copy:
+    src: "/Volumes/JetBrains Toolbox/JetBrains Toolbox.app"
+    dest: "/Applications/JetBrains Toolbox.app"
+    remote_src: yes
+
+- name: Unmount the DMG
+  tags: intellij
+  become: true
+  command: hdiutil detach "/Volumes/JetBrains Toolbox"
+
+- name: Ensure Toolbox is launched once (required for login & setup)
+  tags: intellij
+  shell: open -a "/Applications/JetBrains Toolbox.app"
+  async: 30
+  poll: 0
+  ignore_errors: true
+
+- name: Reminder - Manual login and IDE selection
+  tags: intellij
+  debug:
+    msg: >
+      JetBrains Toolbox has been installed.
+      You must launch it, log in to your JetBrains account,
+      and install: IntelliJ IDEA Ultimate, GoLand, RustRover, DataGrip, WebStorm manually.
