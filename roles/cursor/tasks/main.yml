@@ -1,0 +1,32 @@
+
+- name: Ensure unzip is installed
+  homebrew:
+    name: unzip
+    state: present
+  tags: cursor
+
+- name: Download Cursor AI zip with curl (follows redirect)
+  ansible.builtin.command: >
+    curl -L https://download.cursor.so/mac -o /tmp/cursor.zip
+  args:
+    creates: /tmp/cursor.zip
+  tags: cursor
+
+- name: Unzip Cursor AI
+  unarchive:
+    src: "/tmp/cursor.zip"
+    dest: "/tmp/"
+    remote_src: yes
+  tags: cursor
+
+- name: Move Cursor to Applications
+  command: mv /tmp/Cursor.app /Applications/Cursor.app
+  args:
+    creates: /Applications/Cursor.app
+  tags: cursor
+
+- name: Clean up zip file
+  file:
+    path: "/tmp/cursor.zip"
+    state: absent
+  tags: cursor

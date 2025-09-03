@@ -62,7 +62,7 @@ Before running this playbook, make sure you have the following:
 2. Run the playbook with Ansible:
 
     ```bash
-    ansible-playbook macbook-setup.yml --ask-become-pass
+    ansible-playbook playbook.yml --ask-become-pass
     ```
 
     - `--ask-become-pass` is used to prompt for the **sudo password** to install system-level dependencies.
@@ -73,14 +73,22 @@ Before running this playbook, make sure you have the following:
 
 This playbook uses **tags** to install specific tools individually:
 
-- `react`: Install all React-related development tools.
-- `obsidian`: Install Obsidian and related plugins.
-- `warp`: Install Warp terminal.
-- `git`: Install Git.
-- `homebrew`: Install Homebrew if not already installed.
+- `homebrew`
+- `zsh` install oh my zsh. create .zshrc if it doesnt exist
+- `devtools` install homebrew and homebrew tasks. Install Vim awesome
+- `rust` curl rust and install and reload zsh
+- `python` Install pyenv and install latest version of python
+- `node` Install NVM and Node
+- `editors` Install vscode and a list of useful extensions. Install obsidian and extensions
+- `latex` Latex install and maxtex
+- `docker` Install docker compose and Docker desktop. Add docker CLI to the .zshrc and refresh it
+- `cursor`
+- `intellij` Install Intellij Toolbox. That tool will allow you install individual intellij instances
+- `jvmtools` sdkman install and java. Also install scala and sbt
 
 You can run specific tasks by using the `--tags` option:
 
 ```bash
-ansible-playbook macbook-setup.yml --tags react
+
+ansible-playbook  playbook.yml --tags dev-tools
 
