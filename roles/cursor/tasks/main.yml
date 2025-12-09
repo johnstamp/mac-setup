@@ -1,6 +1,6 @@
-
+---
 - name: Ensure unzip is installed
-  homebrew:
+  community.general.homebrew:
     name: unzip
     state: present
   tags: cursor
@@ -13,20 +13,20 @@
   tags: cursor
 
 - name: Unzip Cursor AI
-  unarchive:
+  ansible.builtin.unarchive:
     src: "/tmp/cursor.zip"
     dest: "/tmp/"
     remote_src: yes
   tags: cursor
 
 - name: Move Cursor to Applications
-  command: mv /tmp/Cursor.app /Applications/Cursor.app
+  ansible.builtin.command: mv /tmp/Cursor.app /Applications/Cursor.app
   args:
     creates: /Applications/Cursor.app
   tags: cursor
 
 - name: Clean up zip file
-  file:
+  ansible.builtin.file:
     path: "/tmp/cursor.zip"
     state: absent
   tags: cursor

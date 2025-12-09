@@ -1,6 +1,6 @@
 ---
 - name: Ensure SDKMAN init script is sourced in .zshrc
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     marker: "# {mark} ANSIBLE SDKMAN INIT"
     block: |
@@ -10,31 +10,49 @@
 
 
 - name: Install SDKMAN
-  shell: curl -s "https://get.sdkman.io" | bash
+  ansible.builtin.shell: curl -s "https://get.sdkman.io" | bash
   args:
     creates: "{{ lookup('env', 'HOME') }}/.sdkman/bin/sdkman-init.sh"
   tags: jvmtools
 
 
 - name: Install Java using SDKMAN
-  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java
+  ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java
   args:
     executable: /bin/zsh
   tags: jvmtools
 
 - name: Install Scala using SDKMAN
-  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install scala
+  ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install scala
   args:
     executable: /bin/zsh
   tags: jvmtools
 
 - name: Install sbt using SDKMAN
-  shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install sbt
+  ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install sbt
   args:
     executable: /bin/zsh
   tags: jvmtools
 
+- name: Install Maven with SDKMAN
+  ansible.builtin.shell: |
+    bash -c "source {{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh && sdk install maven 3.9.9 -y"
+  args:
+    creates: "{{ ansible_env.HOME }}/.sdkman/candidates/maven/current"
+  tags: jvmtools
 
 - name: Reminder to reload shell
-  debug:
+  ansible.builtin.debug:
     msg: "Run 'source ~/.zshrc' or open a new terminal to activate updated environment variables."
+- name: Verify Maven installation
+  ansible.builtin.shell: |
+    bash -c "source {{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh && mvn -version"
+  register: maven_version
+  tags: jvmtools
+
+
+- name: Show Maven version
+  ansible.builtin.debug:
+    msg: "{{ maven_version.stdout }}"
+  tags: jvmtools
+

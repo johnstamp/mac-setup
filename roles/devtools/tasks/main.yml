@@ -3,14 +3,11 @@
   homebrew:
     name:
       - git
-      - java
       - go
       - yarn
       - vim
-      - pyenv
       - warp
-      - scala
-      - sbt
+      - gh
     state: present
   tags: dev-tools
 
@@ -24,6 +21,7 @@
       - virtualbox
       - vagrant
       - utm
+      - firefox
     state: present
   tags: dev-tools
 
