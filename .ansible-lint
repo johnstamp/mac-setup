@@ -1,0 +1,30 @@
+---
+# Ansible-lint configuration
+
+# Exclude paths from linting
+exclude_paths:
+  - .git/
+  - .github/
+
+# Enable specific rule sets
+enable_list:
+  - yaml
+
+# Skip specific rules that may not apply to macOS setup
+skip_list:
+  - package-latest  # We may want latest packages for dev setup
+  - no-handler  # Not all tasks need handlers in a setup playbook
+
+# Warn only mode - change to false to make CI fail on warnings
+warn_list:
+  - experimental
+  - role-name
+
+# Only use rules with the following tags
+# tags:
+
+# Use default rules
+use_default_rules: true
+
+# Treat warnings as errors
+# strict: false
