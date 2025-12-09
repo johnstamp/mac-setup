@@ -1,6 +1,6 @@
 ---
 - name: Install Developer CLI Tools via Homebrew
-  homebrew:
+  community.general.homebrew:
     name:
       - git
       - go
@@ -12,7 +12,7 @@
   tags: dev-tools
 
 - name: Install Developer Applications via Homebrew Cask
-  homebrew_cask:
+  community.general.homebrew_cask:
     name:
       - iterm2
       - spotify
@@ -25,15 +25,26 @@
     state: present
   tags: dev-tools
 
-- name: Install Vim config (johnstamp/vimrc)
-  stat:
-    path: "{{ ansible_env.HOME }}/.vimrc"
-  register: vimrc_check
+- name: Check if Vim config exists
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.vim_runtime"
+  register: devtools_vim_runtime_check
   tags: dev-tools
 
-- name: Clone and install Vim config
-  shell: |
-    git clone https://github.com/johnstamp/vimrc.git ~/.vim_runtime &&
-    sh ~/.vim_runtime/install_awesome_vimrc.sh
-  when: not vimrc_check.stat.exists
+- name: Clone Vim config repository
+  ansible.builtin.git:
+    repo: https://github.com/johnstamp/vimrc.git
+    dest: "{{ ansible_env.HOME }}/.vim_runtime"
+    version: master
+    update: false
+  when: not devtools_vim_runtime_check.stat.exists
+  tags: dev-tools
+
+
+- name: Install Vim config
+  ansible.builtin.command: sh {{ ansible_env.HOME }}/.vim_runtime/install_awesome_vimrc.sh
+  args:
+    creates: "{{ ansible_env.HOME }}/.vimrc"
+  when: not devtools_vim_runtime_check.stat.exists
+  changed_when: true
   tags: dev-tools

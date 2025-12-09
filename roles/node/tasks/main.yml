@@ -1,20 +1,28 @@
 ---
 - name: Check if NVM is installed
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
-  register: nvm_check
+  register: node_nvm_check
+  tags: node
+
+- name: Download NVM installer
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh
+    dest: /tmp/nvm-install.sh
+    mode: '0755'
+  when: not node_nvm_check.stat.exists
   tags: node
 
 - name: Install NVM
-  shell: |
-    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+  ansible.builtin.command: bash /tmp/nvm-install.sh
   args:
-    executable: /bin/bash
-  when: not nvm_check.stat.exists
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  when: not node_nvm_check.stat.exists
   tags: node
 
+
 - name: Add NVM to shell
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: "{{ ansible_env.HOME }}/.zshrc"
     block: |
       export NVM_DIR="$HOME/.nvm"
@@ -24,8 +32,9 @@
   tags: node
 
 - name: Install Node.js LTS
-  shell: |
+  ansible.builtin.shell: |
     source ~/.zshrc && nvm install --lts && nvm use --lts
   args:
     executable: /bin/zsh
+  changed_when: false
   tags: node

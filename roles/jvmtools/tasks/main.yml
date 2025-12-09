@@ -9,8 +9,15 @@
       [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 
+- name: Download SDKMAN installer
+  ansible.builtin.get_url:
+    url: https://get.sdkman.io
+    dest: /tmp/sdkman-install.sh
+    mode: '0755'
+  tags: jvmtools
+
 - name: Install SDKMAN
-  ansible.builtin.shell: curl -s "https://get.sdkman.io" | bash
+  ansible.builtin.command: bash /tmp/sdkman-install.sh
   args:
     creates: "{{ lookup('env', 'HOME') }}/.sdkman/bin/sdkman-init.sh"
   tags: jvmtools
@@ -20,18 +27,21 @@
   ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install java
   args:
     executable: /bin/zsh
+  changed_when: false
   tags: jvmtools
 
 - name: Install Scala using SDKMAN
   ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install scala
   args:
     executable: /bin/zsh
+  changed_when: false
   tags: jvmtools
 
 - name: Install sbt using SDKMAN
   ansible.builtin.shell: source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install sbt
   args:
     executable: /bin/zsh
+  changed_when: false
   tags: jvmtools
 
 - name: Install Maven with SDKMAN
@@ -44,15 +54,15 @@
 - name: Reminder to reload shell
   ansible.builtin.debug:
     msg: "Run 'source ~/.zshrc' or open a new terminal to activate updated environment variables."
+
 - name: Verify Maven installation
   ansible.builtin.shell: |
     bash -c "source {{ ansible_env.HOME }}/.sdkman/bin/sdkman-init.sh && mvn -version"
-  register: maven_version
+  register: jvmtools_maven_version
+  changed_when: false
   tags: jvmtools
-
 
 - name: Show Maven version
   ansible.builtin.debug:
-    msg: "{{ maven_version.stdout }}"
+    msg: "{{ jvmtools_maven_version.stdout }}"
   tags: jvmtools
-

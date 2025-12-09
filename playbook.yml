@@ -1,3 +1,4 @@
+---
 - name: Setup MacBook for Development
   hosts: localhost
   connection: local
@@ -12,5 +13,5 @@
     - latex
     - docker
     - cursor
-    - { role: intellij, tags: intellij }
-    - { role: jvmtools, tags: jvmtools }
+    - {role: intellij, tags: intellij}
+    - {role: jvmtools, tags: jvmtools}

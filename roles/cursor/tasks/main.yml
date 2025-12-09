@@ -5,11 +5,11 @@
     state: present
   tags: cursor
 
-- name: Download Cursor AI zip with curl (follows redirect)
-  ansible.builtin.command: >
-    curl -L https://download.cursor.so/mac -o /tmp/cursor.zip
-  args:
-    creates: /tmp/cursor.zip
+- name: Download Cursor AI zip (follows redirect)
+  ansible.builtin.get_url:
+    url: https://download.cursor.so/mac
+    dest: /tmp/cursor.zip
+    mode: '0644'
   tags: cursor
 
 - name: Unzip Cursor AI

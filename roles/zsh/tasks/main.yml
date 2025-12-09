@@ -1,24 +1,35 @@
 ---
 - name: Ensure Zsh is installed
-  homebrew:
+  community.general.homebrew:
     name: zsh
     state: present
   tags: zsh
 
 - name: Check if Oh My Zsh is installed
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.oh-my-zsh"
-  register: ohmyzsh_check
+  register: zsh_ohmyzsh_check
+  tags: zsh
+
+- name: Download Oh My Zsh installer
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    dest: /tmp/ohmyzsh-install.sh
+    mode: '0755'
+  when: not zsh_ohmyzsh_check.stat.exists
   tags: zsh
 
 - name: Install Oh My Zsh
-  shell: |
-    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  when: not ohmyzsh_check.stat.exists
+  ansible.builtin.command: sh /tmp/ohmyzsh-install.sh
+  environment:
+    RUNZSH: "no"
+  args:
+    creates: "{{ ansible_env.HOME }}/.oh-my-zsh"
+  when: not zsh_ohmyzsh_check.stat.exists
   tags: zsh
 
 - name: Create base .zshrc if not exists
-  file:
+  ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.zshrc"
     state: touch
     mode: '0644'

@@ -1,39 +1,44 @@
+---
 - name: Download JetBrains Toolbox
   tags: intellij
-  get_url:
+  ansible.builtin.get_url:
     url: https://download.jetbrains.com/toolbox/jetbrains-toolbox-2.6.2.41321-arm64.dmg
     dest: /tmp/jetbrains-toolbox.dmg
+    mode: '0644'
 
 - name: Mount the DMG
   tags: intellij
   become: true
-  command: hdiutil attach /tmp/jetbrains-toolbox.dmg
-  register: mount_result
-  changed_when: "'/Volumes/JetBrains Toolbox' in mount_result.stdout"
+  ansible.builtin.command: hdiutil attach /tmp/jetbrains-toolbox.dmg
+  register: intellij_mount_result
+  changed_when: "'/Volumes/JetBrains Toolbox' in intellij_mount_result.stdout"
 
 - name: Copy Toolbox app to Applications
   tags: intellij
   become: true
-  copy:
+  ansible.builtin.copy:
     src: "/Volumes/JetBrains Toolbox/JetBrains Toolbox.app"
     dest: "/Applications/JetBrains Toolbox.app"
+    mode: '0755'
     remote_src: yes
 
 - name: Unmount the DMG
   tags: intellij
   become: true
-  command: hdiutil detach "/Volumes/JetBrains Toolbox"
+  ansible.builtin.command: hdiutil detach "/Volumes/JetBrains Toolbox"
+  changed_when: true
 
 - name: Ensure Toolbox is launched once (required for login & setup)
   tags: intellij
-  shell: open -a "/Applications/JetBrains Toolbox.app"
+  ansible.builtin.command: open -a "/Applications/JetBrains Toolbox.app"
   async: 30
   poll: 0
-  ignore_errors: true
+  failed_when: false
+  changed_when: false
 
 - name: Reminder - Manual login and IDE selection
   tags: intellij
-  debug:
+  ansible.builtin.debug:
     msg: >
       JetBrains Toolbox has been installed.
       You must launch it, log in to your JetBrains account,

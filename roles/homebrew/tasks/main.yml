@@ -1,20 +1,22 @@
 ---
-
 - name: Check if Homebrew is installed
-  stat:
+  ansible.builtin.stat:
     path: /opt/homebrew/bin/brew
-  register: brew_check
+  register: homebrew_check
   tags: always
 
 - name: Install Homebrew if missing
-  shell: >
+  ansible.builtin.shell: >
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  when: not brew_check.stat.exists
+  args:
+    creates: /opt/homebrew/bin/brew
+  when: not homebrew_check.stat.exists
   tags: homebrew
 
 - name: Ensure Homebrew is in the PATH
-  shell: |
-    echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zshrc
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  when: not brew_check.stat.exists
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+    line: 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+    state: present
+  when: not homebrew_check.stat.exists
   tags: homebrew

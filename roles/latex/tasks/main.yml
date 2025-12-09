@@ -1,12 +1,14 @@
 ---
-
 - name: Download MacTeX installer
-  get_url:
+  ansible.builtin.get_url:
     url: https://mirror.ctan.org/systems/mac/mactex/MacTeX.pkg
     dest: /tmp/MacTeX.pkg
+    mode: '0644'
   tags: latex
+
 
 - name: Install MacTeX
-  command: sudo installer -pkg /tmp/MacTeX.pkg -target /
+  ansible.builtin.command: sudo installer -pkg /tmp/MacTeX.pkg -target /
+  args:
+    creates: /usr/local/texlive
   tags: latex
-
