@@ -8,6 +8,7 @@
       - vim
       - warp
       - gh
+      - fzf
     state: present
   tags: dev-tools
 

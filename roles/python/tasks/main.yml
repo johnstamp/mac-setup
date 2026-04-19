@@ -44,3 +44,10 @@
     line: 'eval "$(pyenv virtualenv-init -)"'
     insertafter: EOF
   tags: python
+
+- name: Install Pillow (PIL replacement) with pip
+  ansible.builtin.pip:
+    name: pillow
+    state: present
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip"
+  tags: python
