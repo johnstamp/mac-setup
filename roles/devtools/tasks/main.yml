@@ -9,6 +9,10 @@
       - warp
       - gh
       - fzf
+      - neovim
+      - tmux
+      - lazygit
+
     state: present
   tags: dev-tools
 
